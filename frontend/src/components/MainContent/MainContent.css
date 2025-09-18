@@ -1,0 +1,12 @@
+.main-content {
+  flex: 1;
+  padding: 2rem 0;
+  padding-bottom: 2rem; /* Réduire l'espace car le footer n'est plus fixé */
+  background-color: var(--bg-color);
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}

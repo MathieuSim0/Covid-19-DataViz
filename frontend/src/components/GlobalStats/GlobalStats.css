@@ -1,0 +1,91 @@
+.global-stats {
+  margin-bottom: 2rem;
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stats-header h2 {
+  color: var(--neutral-color);
+  margin: 0;
+}
+
+.last-updated {
+  color: var(--neutral-color);
+  font-size: 0.875rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  border: 1px solid var(--neutral-light-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card h3 {
+  font-size: 1.1rem;
+  margin: 0 0 1rem 0;
+}
+
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stat-card.confirmed h3 {
+  color: var(--confirmed-color);
+}
+
+.stat-card.active h3 {
+  color: var(--active-color);
+}
+
+.stat-card.recovered h3 {
+  color: var(--recovered-color);
+}
+
+.stat-card.deaths h3 {
+  color: var(--deaths-color);
+}
+
+.loading-indicator, .error-message {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--neutral-light-color);
+}
+
+.loading-indicator p {
+  color: var(--neutral-color);
+  font-size: 1.1rem;
+}
+
+.error-message p {
+  color: var(--deaths-color);
+  font-size: 1.1rem;
+}
