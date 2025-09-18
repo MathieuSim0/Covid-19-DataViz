@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Thème clair (par défaut) */
 :root {
   /* Couleur primaire - bleu médical/scientifique */
   --primary-color: #0078b4;
@@ -24,12 +25,14 @@
   --neutral-light-color: #e1e4e8;
   
   /* Couleur de fond */
+  --bg-color: #f8f9fa;
   --bg-dark: #1a202c;
   --bg-light: #f8f9fa;
   
   /* Couleurs de texte */
   --text-light: rgba(255, 255, 255, 0.95);
   --text-dark: #2d3748;
+  --text-color: #2d3748;
   
   /* Couleur statistiques */
   --confirmed-color: #f39c12; /* Orange pour les cas confirmés */
@@ -38,261 +41,44 @@
   --active-color: #3498db;   /* Bleu pour les cas actifs */
 }
 
-/* Référence Tailwind v4 pour les classes personnalisées */
-@reference {
-  .container-app {
-    max-width: 80rem;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  @media (min-width: 640px) {
-    .container-app {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .container-app {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
+/* Thème sombre */
+.theme-dark {
+  --primary-color: #1e88e5;
+  --primary-hover-color: #1976d2;
+  --danger-color: #e74c3c;
+  --danger-hover-color: #c0392b;
+  --secondary-color: #2ecc71;
+  --secondary-hover-color: #27ae60;
+  --accent-color: #f39c12;
+  --accent-hover-color: #d68910;
+  --neutral-color: #bdc3c7;
+  --neutral-light-color: #34495e;
+  --bg-color: #1a202c;
+  --text-color: #f5f5f5;
 }
 
-/* ========== STYLES GLOBAUX DE BASE ========== */
-html, body {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 1rem;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
-  font-weight: 400;
-}
-
+/* Styles pour tous les thèmes */
 body {
-  margin: 0;
-  min-height: 100vh;
-  background-color: white;
-  color: #111827;
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827;
-    color: #f3f4f6;
-  }
+/* Ajustements pour le thème sombre */
+.theme-dark .card,
+.theme-dark button.btn-primary {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
-  margin-bottom: 1rem;
+.theme-dark .main-content {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
-h1 {
-  font-size: 1.875rem;
-  line-height: 1.1;
-}
-
-@media (min-width: 768px) {
-  h1 {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
-  }
-}
-
-h2 {
-  font-size: 1.5rem;
-  line-height: 2rem;
-}
-
-@media (min-width: 768px) {
-  h2 {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
-  }
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-@media (prefers-color-scheme: dark) {
-  a {
-    color: #60a5fa;
-  }
-  a:hover {
-    color: #93c5fd;
-  }
-}
-
-/* ========== COMPOSANTS ========== */
-.btn {
+/* Classes personnalisées pour l'application */
+.container-app {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition-property: background-color, color;
-  transition-duration: 300ms;
-}
-
-.btn-primary {
-  background-color: var(--primary-color);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-hover-color);
-}
-
-.btn-secondary {
-  background-color: var(--secondary-color);
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: var(--secondary-hover-color);
-}
-
-.btn-danger {
-  background-color: var(--danger-color);
-  color: white;
-}
-
-.btn-danger:hover {
-  background-color: var(--danger-hover-color);
-}
-
-@media (prefers-color-scheme: dark) {
-  .btn-secondary {
-    background-color: #374151;
-    color: #e5e7eb;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #4b5563;
-  }
-}
-
-.card {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 15px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: 1.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-top: 4px solid var(--neutral-light-color);
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px -2px rgba(0, 0, 0, 0.15), 0 4px 8px -1px rgba(0, 0, 0, 0.08);
-}
-
-.card.confirmed {
-  border-top-color: var(--confirmed-color);
-}
-
-.card.recovered {
-  border-top-color: var(--recovered-color);
-}
-
-.card.deaths {
-  border-top-color: var(--deaths-color);
-}
-
-.card.active {
-  border-top-color: var(--active-color);
-}
-
-@media (prefers-color-scheme: dark) {
-  .card {
-    background-color: #1f2937;
-    border-top-color: #2d3748;
-  }
-}
-
-.section {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.input {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-}
-
-.input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-
-@media (prefers-color-scheme: dark) {
-  .input {
-    background-color: #1f2937;
-    color: white;
-    border-color: #4b5563;
-  }
-}
-
-/* ========== UTILITAIRES ========== */
-.text-shadow {
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.transition-fast {
-  transition-property: all;
-  transition-duration: 200ms;
-}
-
-.transition-medium {
-  transition-property: all;
-  transition-duration: 300ms;
-}
-
-.transition-slow {
-  transition-property: all;
-  transition-duration: 500ms;
-}
-
-/* Ajustements pour les boutons génériques */
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  button {
-    background-color: #f9f9f9;
-  }
 }
