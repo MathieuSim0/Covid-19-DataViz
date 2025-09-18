@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 
-/**
- * GlobalStats component for COVID-19 dashboard
- * Aggregates global statistics from multiple CSV data files
- * Displays confirmed cases, deaths, recoveries, and active cases
- */
 function GlobalStats() {
   const [stats, setStats] = useState({
     confirmed: 0,
@@ -18,12 +13,10 @@ function GlobalStats() {
   });
 
   useEffect(() => {
-    // Paths to CSV files relative to public directory
     const confirmedPath = '/COVID-19-master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv';
     const deathsPath = '/COVID-19-master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv';
     const recoveredPath = '/COVID-19-master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv';
 
-    // Function to parse CSV file and get the latest global totals
     const parseCSV = async (filePath) => {
       try {
         const response = await fetch(filePath);
@@ -39,14 +32,12 @@ function GlobalStats() {
                 return;
               }
               
-              // Get the most recent date column (last column in the dataset)
               const dateColumns = Object.keys(result.data[0]).filter(key => 
                 !['Province/State', 'Country/Region', 'Lat', 'Long'].includes(key)
               );
               
               const lastDateColumn = dateColumns[dateColumns.length - 1];
               
-              // Sum up values from the most recent date
               const total = result.data.reduce((acc, row) => {
                 const value = parseFloat(row[lastDateColumn]) || 0;
                 return acc + value;
@@ -67,7 +58,6 @@ function GlobalStats() {
       }
     };
 
-    // Fetch and process all datasets
     const fetchData = async () => {
       try {
         setStats(prevStats => ({ ...prevStats, loading: true }));
@@ -76,15 +66,13 @@ function GlobalStats() {
         const deathsData = await parseCSV(deathsPath);
         const recoveredData = await parseCSV(recoveredPath);
         
-        // Calculate active cases
         const active = confirmedData.total - deathsData.total - recoveredData.total;
         
-        // Update state with the aggregated data
         setStats({
           confirmed: confirmedData.total,
           deaths: deathsData.total,
           recovered: recoveredData.total,
-          active: active > 0 ? active : 0, // Prevent negative active cases
+          active: active > 0 ? active : 0, 
           loading: false,
           error: null,
           lastUpdated: confirmedData.lastUpdated
@@ -102,22 +90,19 @@ function GlobalStats() {
     fetchData();
   }, []);
 
-  // Format numbers with commas
   const formatNumber = (num) => {
     return new Intl.NumberFormat().format(Math.round(num));
   };
 
-  // Format the date for display
   const formatDate = (dateString) => {
     if (!dateString) return '';
     
-    // Convert from M/D/YY format to a proper date string
     const parts = dateString.split('/');
     if (parts.length !== 3) return dateString;
     
     const month = parseInt(parts[0]);
     const day = parseInt(parts[1]);
-    const year = parseInt(`20${parts[2]}`); // Assuming 20xx for YY
+    const year = parseInt(`20${parts[2]}`); 
     
     return new Date(year, month - 1, day).toLocaleDateString(undefined, {
       year: 'numeric',

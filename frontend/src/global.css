@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variables globales - Palette COVID-19 */
 :root {
   /* Couleur primaire - bleu médical/scientifique */
   --primary-color: #0078b4;
