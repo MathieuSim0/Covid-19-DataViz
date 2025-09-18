@@ -1,19 +1,26 @@
+/* Styles spécifiques à l'application */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Styles des logos */
 .logo {
-  height: 6em;
-  padding: 1.5em;
+  height: 6rem;
+  width: auto;
+  padding: 1rem;
+  transition-property: transform;
+  transition-duration: 300ms;
   will-change: filter;
-  transition: filter 300ms;
 }
+
 .logo:hover {
+  transform: scale(1.1);
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -33,10 +40,14 @@
   }
 }
 
-.card {
-  padding: 2em;
+/* Autres styles spécifiques à l'application */
+.read-the-docs {
+  color: #6b7280;
+  margin-top: 2rem;
 }
 
-.read-the-docs {
-  color: #888;
+@media (prefers-color-scheme: dark) {
+  .read-the-docs {
+    color: #9ca3af;
+  }
 }
