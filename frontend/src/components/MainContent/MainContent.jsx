@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import './MainContent.css';
 import GlobalStats from '../GlobalStats';
 import CountrySelector from '../CountrySelector';
-import { fetchCountries, fetchCountryData, formatNumber } from '../../utils/dataUtils';
+import { fetchCountries, fetchCountryData, formatNumber, extractChartData } from '../../utils/dataUtils';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 function MainContent({ style }) {
   const [covidData, setCovidData] = useState({
@@ -23,6 +24,7 @@ function MainContent({ style }) {
   const [error, setError] = useState(null);
   const [dataError, setDataError] = useState(null);
   const [chartData, setChartData] = useState(null);
+  const [chartType, setChartType] = useState('confirmed');
   
   // Charger la liste des pays
   useEffect(() => {
@@ -68,6 +70,7 @@ function MainContent({ style }) {
         });
         
         if (data.timeseries) {
+          // Process and set the timeseries data for charting
           setChartData(data.timeseries);
         }
       } catch (err) {
@@ -83,6 +86,11 @@ function MainContent({ style }) {
   
   const handleCountrySelect = (country) => {
     setSelectedCountry(country);
+  };
+  
+  // Handle chart type selection
+  const handleChartTypeChange = (type) => {
+    setChartType(type);
   };
 
   return (
@@ -171,18 +179,108 @@ function MainContent({ style }) {
           )}
         </div>
         
-        {/* Chart placeholder */}
-        <div className="placeholder-container chart-placeholder">
-          <div className="placeholder-content">
-            <svg className="placeholder-icon" width="64" height="64" viewBox="0 0 24 24" fill="var(--primary-color)">
-              <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-            </svg>
-            <h3>COVID-19 Trend Chart</h3>
-            <p className="placeholder-text">Interactive chart will be displayed here</p>
-            <button className="btn-primary">
-              Load Chart Data
-            </button>
-          </div>
+        {/* COVID-19 Trend Chart */}
+        <div className="chart-container">
+          <h3 className="chart-title">COVID-19 Daily Evolution - {selectedCountry}</h3>
+          
+          {!chartData && isDataLoading ? (
+            <div className="chart-loading">Loading chart data...</div>
+          ) : !chartData ? (
+            <div className="chart-error">No time series data available for {selectedCountry}</div>
+          ) : (
+            <div className="chart-wrapper">
+              <div className="chart-controls">
+                <button 
+                  className={`btn-chart ${chartType === 'confirmed' ? 'active' : ''}`}
+                  onClick={() => handleChartTypeChange('confirmed')}
+                >
+                  Confirmed
+                </button>
+                <button 
+                  className={`btn-chart ${chartType === 'deaths' ? 'active' : ''}`}
+                  onClick={() => handleChartTypeChange('deaths')}
+                >
+                  Deaths
+                </button>
+                <button 
+                  className={`btn-chart ${chartType === 'recovered' ? 'active' : ''}`}
+                  onClick={() => handleChartTypeChange('recovered')}
+                >
+                  Recovered
+                </button>
+                <button 
+                  className={`btn-chart ${chartType === 'all' ? 'active' : ''}`}
+                  onClick={() => handleChartTypeChange('all')}
+                >
+                  All
+                </button>
+              </div>
+              
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart
+                  data={chartData?.[chartType === 'all' ? 'confirmed' : chartType] || []}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={(tick) => {
+                      const date = new Date(tick);
+                      return `${date.getMonth() + 1}/${date.getDate()}`;
+                    }}
+                  />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value) => [formatNumber(value), "Cases"]}
+                    labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                  />
+                  <Legend />
+                  
+                  {/* Display based on chart type selection */}
+                  {(chartType === 'confirmed' || chartType === 'all') && chartData?.confirmed && (
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      name="Confirmed Cases"
+                      stroke="#0078b4"
+                      activeDot={{ r: 6 }}
+                      strokeWidth={2}
+                      data={chartData.confirmed}
+                      isAnimationActive={true}
+                    />
+                  )}
+                  
+                  {/* Show Deaths line */}
+                  {(chartType === 'deaths' || chartType === 'all') && chartData?.deaths && (
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      name="Deaths"
+                      stroke="#e53e3e"
+                      activeDot={{ r: 6 }}
+                      strokeWidth={2}
+                      data={chartData.deaths}
+                      isAnimationActive={true}
+                    />
+                  )}
+                  
+                  {/* Show Recovered line */}
+                  {(chartType === 'recovered' || chartType === 'all') && chartData?.recovered && (
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      name="Recovered"
+                      stroke="#38a169"
+                      activeDot={{ r: 6 }}
+                      strokeWidth={2}
+                      data={chartData.recovered}
+                      isAnimationActive={true}
+                    />
+                  )}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
         
         {/* Map placeholder */}
