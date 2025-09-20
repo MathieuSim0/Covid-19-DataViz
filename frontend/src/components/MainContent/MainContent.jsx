@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './MainContent.css';
 import GlobalStats from '../GlobalStats';
+import CountrySelector from '../CountrySelector';
 
 function MainContent({ style }) {
   const [covidData, setCovidData] = useState({
@@ -11,7 +12,37 @@ function MainContent({ style }) {
   });
   
   const [selectedCountry, setSelectedCountry] = useState('Global');
-  const countries = ['Global', 'USA', 'India', 'Brazil', 'UK', 'Russia', 'France', 'Germany', 'Japan', 'China'];
+  const [countries, setCountries] = useState(['Global']);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Fetch countries from the backend
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:3001/api/countries');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setCountries(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching countries:', err);
+        setError('Failed to load countries. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+  
+  const handleCountrySelect = (country) => {
+    setSelectedCountry(country);
+    // Ici, vous pourriez également charger les données spécifiques au pays sélectionné
+  };
   
   const formatNumber = (num) => {
     return new Intl.NumberFormat().format(num);
@@ -26,22 +57,13 @@ function MainContent({ style }) {
         <GlobalStats />
         
         {/* Country selector */}
-        <div className="country-selector-container">
-          <div className="country-selector">
-            <h3>Select Region:</h3>
-            <div className="country-buttons">
-              {countries.map(country => (
-                <button 
-                  key={country}
-                  onClick={() => setSelectedCountry(country)}
-                  className={`country-button ${country === selectedCountry ? 'active' : 'inactive'}`}
-                >
-                  {country}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <CountrySelector
+          countries={countries}
+          selectedCountry={selectedCountry}
+          onSelectCountry={handleCountrySelect}
+          isLoading={isLoading}
+          error={error}
+        />
         
         {/* Stats cards */}
         <div className="stats-grid">

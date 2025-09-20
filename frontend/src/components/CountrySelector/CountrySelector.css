@@ -1,0 +1,159 @@
+/* CountrySelector Styles */
+.country-selector-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+}
+
+.country-selector-header h3 {
+  margin-bottom: 0.75rem;
+  color: #fff; /* Texte blanc pour meilleure visibilité sur fond sombre */
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Dropdown toggle button */
+.country-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: white; /* Fond blanc explicite */
+  border: 1px solid #aaa; /* Bordure plus visible */
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #333; /* Texte foncé pour meilleure lisibilité */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.country-dropdown-toggle:hover {
+  background-color: #f5f5f5; /* Couleur de survol plus visible */
+  border-color: var(--primary-color);
+}
+
+.country-dropdown-toggle:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 120, 180, 0.2); /* Ombre explicite sans var */
+}
+
+.dropdown-arrow {
+  width: 20px;
+  height: 20px;
+  fill: #666; /* Couleur de flèche plus foncée */
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown menu */
+.country-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  max-height: 350px;
+  background-color: white; /* Fond blanc explicite */
+  border: 1px solid #ccc; /* Bordure grise visible */
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée */
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Search input */
+.country-search-container {
+  position: relative;
+  padding: 0.75rem;
+  border-bottom: 1px solid #ccc; /* Bordure grise visible */
+  background-color: white; /* Fond blanc explicite */
+}
+
+.country-search-input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  border: 1px solid #aaa; /* Bordure plus foncée pour meilleur contraste */
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  background-color: white; /* Fond blanc explicite */
+  color: #333; /* Texte foncé pour meilleure lisibilité */
+}
+
+.country-search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  fill: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* Country list */
+.country-list-container {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.country-list {
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  max-height: 100%;
+}
+
+.country-list-item {
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #333; /* Couleur de texte foncée pour assurer la visibilité */
+  background-color: white; /* Fond blanc pour le contraste */
+}
+
+.country-list-item:hover {
+  background-color: var(--hover-color);
+}
+
+.country-list-item.selected {
+  background-color: var(--primary-color); /* Fond principal plus intense */
+  color: white; /* Texte blanc sur fond coloré */
+  font-weight: 500;
+}
+
+.country-list-item.no-results {
+  text-align: center;
+  color: #666; /* Gris plus foncé pour meilleure visibilité */
+  font-style: italic;
+  cursor: default;
+}
+
+/* Loading and error states */
+.country-selector-loading, 
+.country-selector-error {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.15); /* Fond semi-transparent */
+  margin-bottom: 1.5rem;
+  color: #fff; /* Texte blanc pour la visibilité sur fond sombre */
+  font-weight: 500; /* Texte légèrement plus épais */
+}
+
+.country-selector-error {
+  color: #ff6b6b; /* Rouge plus vif pour erreur */
+  border: 1px solid rgba(255, 107, 107, 0.5); /* Bordure d'erreur plus visible */
+  background-color: rgba(255, 107, 107, 0.1); /* Fond rouge très léger */
+}
