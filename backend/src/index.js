@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const countriesService = require('./services/countries/countryService');
+const countryDataService = require('./services/countries/countryDataService');
 
 // Create Express app
 const app = express();
@@ -19,6 +20,18 @@ app.get('/api/countries', async (req, res) => {
   } catch (error) {
     console.error('Error fetching countries:', error);
     res.status(500).json({ error: 'Failed to fetch countries' });
+  }
+});
+
+// Route pour récupérer les données d'un pays spécifique
+app.get('/api/country/:name', async (req, res) => {
+  try {
+    const countryName = req.params.name;
+    const countryData = await countryDataService.getCountryData(countryName);
+    res.json(countryData);
+  } catch (error) {
+    console.error(`Error fetching data for country ${req.params.name}:`, error);
+    res.status(500).json({ error: `Failed to fetch data for country: ${req.params.name}` });
   }
 });
 

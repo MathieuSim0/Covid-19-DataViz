@@ -2,31 +2,35 @@ import { useState, useEffect } from 'react';
 import './MainContent.css';
 import GlobalStats from '../GlobalStats';
 import CountrySelector from '../CountrySelector';
+import { fetchCountries, fetchCountryData, formatNumber } from '../../utils/dataUtils';
 
 function MainContent({ style }) {
   const [covidData, setCovidData] = useState({
-    confirmed: 543285647,
-    recovered: 471895321,
-    deaths: 6738572,
-    active: 64651754
+    confirmed: 0,
+    newConfirmed: 0,
+    deaths: 0,
+    newDeaths: 0,
+    recovered: 0,
+    newRecovered: 0,
+    active: 0,
+    newActive: 0
   });
   
   const [selectedCountry, setSelectedCountry] = useState('Global');
   const [countries, setCountries] = useState(['Global']);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dataError, setDataError] = useState(null);
+  const [chartData, setChartData] = useState(null);
   
-  // Fetch countries from the backend
+  // Charger la liste des pays
   useEffect(() => {
-    const fetchCountries = async () => {
+    const loadCountries = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('http://localhost:3001/api/countries');
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setCountries(data);
+        const countriesList = await fetchCountries();
+        setCountries(countriesList);
         setError(null);
       } catch (err) {
         console.error('Error fetching countries:', err);
@@ -36,25 +40,62 @@ function MainContent({ style }) {
       }
     };
 
-    fetchCountries();
+    loadCountries();
   }, []);
+  
+  // Charger les données du pays sélectionné
+  useEffect(() => {
+    const loadCountryData = async () => {
+      if (!selectedCountry) return;
+      
+      try {
+        setIsDataLoading(true);
+        setDataError(null); // Réinitialiser l'erreur à chaque nouvelle requête
+        
+        const data = await fetchCountryData(selectedCountry);
+        
+        // Mettre à jour les données avec les valeurs reçues
+        setCovidData({
+          confirmed: data.confirmed || 0,
+          newConfirmed: data.newConfirmed || 0,
+          deaths: data.deaths || 0,
+          newDeaths: data.newDeaths || 0,
+          recovered: data.recovered || 0,
+          newRecovered: data.newRecovered || 0,
+          active: data.active || 0,
+          newActive: data.newActive || 0,
+          countryName: data.name || selectedCountry
+        });
+        
+        if (data.timeseries) {
+          setChartData(data.timeseries);
+        }
+      } catch (err) {
+        console.error(`Error fetching data for ${selectedCountry}:`, err);
+        setDataError(`Failed to load data for ${selectedCountry}. Please try again later.`);
+      } finally {
+        setIsDataLoading(false);
+      }
+    };
+    
+    loadCountryData();
+  }, [selectedCountry]);
   
   const handleCountrySelect = (country) => {
     setSelectedCountry(country);
-    // Ici, vous pourriez également charger les données spécifiques au pays sélectionné
-  };
-  
-  const formatNumber = (num) => {
-    return new Intl.NumberFormat().format(num);
   };
 
   return (
     <main className="main-content" style={style}>
       <div className="main-container">
-        {/* Global Stats Component */}
-        <h1 className="page-title">COVID-19 Global Dashboard</h1>
+        {/* Dashboard Title - Updates with selected country */}
+        <h1 className="page-title">
+          {selectedCountry === 'Global' 
+            ? 'COVID-19 Global Dashboard' 
+            : `COVID-19 Dashboard: ${selectedCountry}`}
+        </h1>
         
-        <GlobalStats />
+        {selectedCountry === 'Global' && <GlobalStats />}
         
         {/* Country selector */}
         <CountrySelector
@@ -67,57 +108,67 @@ function MainContent({ style }) {
         
         {/* Stats cards */}
         <div className="stats-grid">
-          <div className="card confirmed">
-            <h3>Confirmed</h3>
-            <div className="stats-value">
-              {formatNumber(covidData.confirmed)}
-            </div>
-            <div className="stats-change confirmed">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 14l5-5 5 5H7z"/>
-              </svg>
-              <span>+124,578 today</span>
-            </div>
-          </div>
+          {dataError && (
+            <div className="data-error-message">{dataError}</div>
+          )}
           
-          <div className="card active">
-            <h3>Active</h3>
-            <div className="stats-value">
-              {formatNumber(covidData.active)}
-            </div>
-            <div className="stats-change active">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 14l5-5 5 5H7z"/>
-              </svg>
-              <span>+52,487 today</span>
-            </div>
-          </div>
-          
-          <div className="card recovered">
-            <h3>Recovered</h3>
-            <div className="stats-value">
-              {formatNumber(covidData.recovered)}
-            </div>
-            <div className="stats-change recovered">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 10l5 5 5-5H7z"/>
-              </svg>
-              <span>+98,234 today</span>
-            </div>
-          </div>
-          
-          <div className="card deaths">
-            <h3>Deaths</h3>
-            <div className="stats-value">
-              {formatNumber(covidData.deaths)}
-            </div>
-            <div className="stats-change deaths">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 10l5 5 5-5H7z"/>
-              </svg>
-              <span>+1,285 today</span>
-            </div>
-          </div>
+          {isDataLoading ? (
+            <div className="data-loading">Loading country data...</div>
+          ) : (
+            <>
+              <div className="card confirmed">
+                <h3>Confirmed</h3>
+                <div className="stats-value">
+                  {formatNumber(covidData.confirmed)}
+                </div>
+                <div className="stats-change confirmed">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14l5-5 5 5H7z"/>
+                  </svg>
+                  <span>+{formatNumber(covidData.newConfirmed)} new</span>
+                </div>
+              </div>
+              
+              <div className="card active">
+                <h3>Active</h3>
+                <div className="stats-value">
+                  {formatNumber(covidData.active)}
+                </div>
+                <div className="stats-change active">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14l5-5 5 5H7z"/>
+                  </svg>
+                  <span>+{formatNumber(covidData.newActive)} new</span>
+                </div>
+              </div>
+              
+              <div className="card recovered">
+                <h3>Recovered</h3>
+                <div className="stats-value">
+                  {formatNumber(covidData.recovered)}
+                </div>
+                <div className="stats-change recovered">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14l5-5 5 5H7z"/>
+                  </svg>
+                  <span>+{formatNumber(covidData.newRecovered)} new</span>
+                </div>
+              </div>
+              
+              <div className="card deaths">
+                <h3>Deaths</h3>
+                <div className="stats-value">
+                  {formatNumber(covidData.deaths)}
+                </div>
+                <div className="stats-change deaths">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 14l5-5 5 5H7z"/>
+                  </svg>
+                  <span>+{formatNumber(covidData.newDeaths)} new</span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
         
         {/* Chart placeholder */}
